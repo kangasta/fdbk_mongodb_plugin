@@ -1,0 +1,24 @@
+language: python
+python:
+- '3.6'
+- '3.7'
+- '3.8'
+services:
+- docker
+install:
+- pip install -r requirements.txt
+script:
+- pycodestyle fdbk_mongodb_plugin
+- pylint -E --enable=invalid-name,unused-import,useless-object-inheritance fdbk_mongodb_plugin
+- docker run -dp 27017:27017 --name=mongo mongo:4-bionic
+- coverage run --branch --source fdbk_mongodb_plugin/ -m unittest discover -s tst/
+- coverage report -m
+- docker rm -f mongo
+deploy:
+  provider: pypi
+  user: __token__
+  password:
+    secure: 02z+5RbK+PO73hHg6YTXj1HmGOCuXOQoLVlFCRemf9KxN0R9FwHfWm2LYM3EJCnnYkr0YDVzc5oUbI9UhulhTNRIZie0X3Jp23T/PR8g0JCG+nRhi+UEkir5f3h7HKTHh1AGYQpjH0V1nbxAMNi64++QGbiBRns/m6uAyAuiITOqW54uAs5yWhwD3qxLmL+uibze2LynWSXWGkjMP6mVMSZZbtj2lMXX8PuWTX7j6I/O8sNsEew/TaapEuG+tSYgTajOLBkv1FWh3gXVfUt4x+aFbzFAG2APgYnlIL0J6J17G/0mwBJcbSSer1GZU/8R1Gtf4/4RL1cC/FPSheAc39yq+ZEyCo3mDeXBubVYeHQtmqT0c4+JGhMJK9Rh/4U6txMh7ylPGpacbQ41vdw+M3u5qECKkc1PVm2FJYnhlsXYgE7umH7RHYcCRBe2tqR1gNuZJe5kJdVrKNALhTvpwjzbTA8E3JMAAJ3enkjkkewECh1kvS15+84YewD+LI24bgzrZEgioCIcPZ2oQ+ab0iYSRsHKjJ1bHObJuhRb7PmlMADkyM2UV1ND6OYvBViRJdPeqYWfUy14VPmi1ZjyHgIfz1HBtu11BUXdE/U+G7gHf1JesIoCMWHc6ExhMDI7yByhDXMhGb8l8YVyAqiw/s7ZiDOeEovRxMhaPYP4+2A=
+  on:
+    tags: true
+    python: 3.7
